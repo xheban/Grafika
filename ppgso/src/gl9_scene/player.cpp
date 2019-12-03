@@ -48,7 +48,7 @@ bool Player::update(Scene &scene, float dt) {
       float distanceY = distance(position.y, boat->position.y);
 
 
-      if ((distanceY < 1 && distanceX < 1 && boat->position.y > position.y) || (distanceY < 5 && distanceX < 1 && boat->position.y < position.y )) {
+      if ((distanceY < 1 && distanceX < 1 && boat->position.y > position.y) || (distanceY < 5 && distanceX < 1.5f && boat->position.y < position.y )) {
           // Explode
           auto explosion = make_unique<Explosion>();
           explosion->position = position;
@@ -65,24 +65,36 @@ bool Player::update(Scene &scene, float dt) {
     water->speed = waterSpeed;
     scene.objects.push_back(move(water));
 
-  if(position.x > 8.5){
+    if(position.x > 8.5){
         position.x = 8.5;
-  }
+    }
     if(position.x < -8.5){
-        position.x = -8.5;
+        position.x = -8.5f;
     }
 
   // Keyboard controls
-  if(scene.keyboard[GLFW_KEY_LEFT]) {
-    position.x += 10 * dt;
-    waterSpeed = {linearRand(-0.8,0.8) - 4, linearRand(-4,-3),linearRand(-1,1)};
-  } else if(scene.keyboard[GLFW_KEY_RIGHT]) {
-    position.x -= 10 * dt;
-    waterSpeed = {linearRand(-0.8,0.8) + 4, linearRand(-4,-3),linearRand(-1,1)};
-  } else {
-    rotation.z = 0;
-    waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3),linearRand(-1,1)};
-  }
+    if(scene.keyboard[GLFW_KEY_LEFT]) {
+        position.x += 10 * dt;
+//        rotation.z = -PI/16.0f;
+//        if(!addedL){
+//            position.x -= 0.5;
+//        }
+        waterSpeed = {linearRand(-0.8,0.8) - 4, linearRand(-4,-3),linearRand(-1,1)};
+        addedL = true;
+    } else if(scene.keyboard[GLFW_KEY_RIGHT]) {
+        position.x -= 10 * dt;
+//        rotation.z = PI/16.0f;
+//        if(!addedR){
+//            position.x += 0.3;
+//        }
+        waterSpeed = {linearRand(-0.8,0.8) + 4, linearRand(-4,-3),linearRand(-1,1)};
+        addedR = true;
+    } else {
+        addedL = false;
+        addedR = false;
+        rotation.z = 0;
+        waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3),linearRand(-1,1)};
+    }
 
   // Firing projectiles
   if(scene.keyboard[GLFW_KEY_SPACE] && fireDelay > fireRate) {
