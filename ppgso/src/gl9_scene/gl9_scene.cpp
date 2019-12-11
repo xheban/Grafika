@@ -25,7 +25,7 @@ using namespace std;
 using namespace glm;
 using namespace ppgso;
 
-const unsigned int SIZE = 800;
+const unsigned int SIZE = 1600;
 
 /*!
  * Custom windows for our simple game

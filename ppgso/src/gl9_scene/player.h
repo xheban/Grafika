@@ -17,10 +17,18 @@ private:
 
   // Delay fire and fire rate
   float fireDelay{0.0f};
+<<<<<<< HEAD
   float fireRate{0.4f};
   int ammo = 6;
   float fuel = 100;
   float fuelTime = 0.0f;
+=======
+  float fireRate{0.5f};
+  int ammo = 20;
+  int fuel = 100;
+  bool addedL = false;
+  bool addedR = false;
+>>>>>>> master
 
 public:
   /*!

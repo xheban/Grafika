@@ -46,6 +46,7 @@ find_package(GLFW3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(FT_FREETYPE_H REQUIRED)
 
 # Optional packages
 find_package(OpenMP)
@@ -180,14 +181,10 @@ add_executable(gl9_scene
         src/gl9_scene/boat.cpp
         src/gl9_scene/space.cpp
         src/gl9_scene/waterParticle.cpp
-        src/gl9_scene/mountain.cpp)
+        src/gl9_scene/mountain.cpp
+        src/gl9_scene/text.cpp)
 target_link_libraries(gl9_scene ppgso shaders)
 install(TARGETS gl9_scene DESTINATION .)
-
-# Playground target
-add_executable(playground src/playground/playground.cpp)
-target_link_libraries(playground ppgso shaders)
-install (TARGETS playground DESTINATION .)
 
 # Task1
 add_executable(task1_filter src/task1_filter/task1_filter.cpp)
