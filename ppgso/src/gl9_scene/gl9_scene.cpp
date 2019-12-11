@@ -17,6 +17,9 @@
 #include "generator.h"
 #include "player.h"
 #include "space.h"
+#include "fuelBar.h"
+#include "ammoBar.h"
+#include "fuelBarFill.h"
 
 using namespace std;
 using namespace glm;
@@ -56,6 +59,33 @@ private:
     auto player = make_unique<Player>();
     player->position.y = -6;
     scene.objects.push_back(move(player));
+
+    //add fuel bar
+    auto fuelBar = make_unique<FuelBar>();
+    fuelBar->position.y = -10.8;
+    fuelBar->position.x = -4;
+    fuelBar->position.z = -3;
+    fuelBar->rotation.x = 80;
+    scene.objects.push_back(move(fuelBar));
+
+    //add fuel bar
+    auto fuelBarFill = make_unique<FuelBarFill>();
+    fuelBarFill->position.y = -10.83;
+    fuelBarFill->position.x = -4.87;
+    fuelBarFill->position.z = -3;
+    fuelBarFill->rotation.x = 80;
+    scene.objects.push_back(move(fuelBarFill));
+
+    //add ammo bar
+    auto ammoBar = make_unique<AmmoBar>();
+      ammoBar->position.y = -10.8;
+      ammoBar->position.x = 4;
+      ammoBar->position.z = -3;
+      ammoBar->rotation.x = 80;
+      ammoBar->rotation.y = 0.03f;
+    scene.objects.push_back(move(ammoBar));
+
+
   }
 
 public:

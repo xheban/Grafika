@@ -19,13 +19,13 @@ unique_ptr<Shader> Boat::shader;
 
 Boat::Boat() {
   // Set random scale speed and rotation
-  scale *= 0.3f;
-  speed = {linearRand(1,4), -5, 0.0f};
+  scale *= 0.8f;
+  speed = {linearRand(1,3), -5, 0.0f};
 
   // Initialize static resources if needed
   if (!shader) shader = make_unique<Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
-  if (!texture) texture = make_unique<Texture>(image::loadBMP("metal.bmp"));
-  if (!mesh) mesh = make_unique<Mesh>("boatSmallR.obj");
+  if (!texture) texture = make_unique<Texture>(image::loadBMP("boat_fishing.bmp"));
+  if (!mesh) mesh = make_unique<Mesh>("smallBoat2R.obj");
 }
 
 bool Boat::update(Scene &scene, float dt) {
@@ -33,7 +33,7 @@ bool Boat::update(Scene &scene, float dt) {
 
   position += speed * dt;
 
-  if(position.x > 6 || position.x < -6){
+  if(position.x > 5.5 || position.x < -5.5){
       speed.x = speed.x *-1;
   }
 
@@ -113,8 +113,6 @@ void Boat::explode(Scene &scene, vec3 explosionPosition, vec3 explosionScale) {
   explosion->scale = explosionScale;
   explosion->speed = speed / 2.0f;
   scene.objects.push_back(move(explosion));
-
-
 }
 
 void Boat::render(Scene &scene) {

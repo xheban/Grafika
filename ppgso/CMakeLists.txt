@@ -167,10 +167,15 @@ add_executable(gl9_scene
         src/gl9_scene/object.cpp
         src/gl9_scene/scene.cpp
         src/gl9_scene/camera.cpp
-        src/gl9_scene/asteroid.cpp
+        src/gl9_scene/ammoCart.cpp
+        src/gl9_scene/barell.cpp
+        src/gl9_scene/ammoBar.cpp
+        src/gl9_scene/fuelBar.cpp
+        src/gl9_scene/fuelBarFill.cpp
         src/gl9_scene/generator.cpp
         src/gl9_scene/player.cpp
         src/gl9_scene/projectile.cpp
+        src/gl9_scene/rain.cpp
         src/gl9_scene/explosion.cpp
         src/gl9_scene/boat.cpp
         src/gl9_scene/space.cpp

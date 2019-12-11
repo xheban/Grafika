@@ -13,6 +13,7 @@ private:
   static std::unique_ptr<ppgso::Texture> texture;
 
   float age{0.0f};
+  float ammo{20.0f};
   glm::vec3 speed;
   glm::vec3 rotMomentum;
 public:

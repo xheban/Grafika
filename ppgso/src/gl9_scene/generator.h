@@ -27,5 +27,13 @@ public:
   bool firstBoat = false;
   float mountainTime = 0.0f;
   float refreshTime = 17.8f;
-  bool repeat = false;
+  float refreshTimeBarrel = 15.0f;
+  float barrelTime = 0.0f;
+  float refreshTimeAmmo = 20.0f;
+  float rainTime = 5.0f;
+  float rainTimer = 15.0f;
+  bool rain = true;
+  float noRainTime = 0.0f;
+  float noRainTimer = 60.0f;
+  float ammoTime = 0.0f;
 };

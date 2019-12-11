@@ -1,10 +1,14 @@
 #include "player.h"
 #include "scene.h"
-#include "asteroid.h"
+#include "fuelBar.h"
 #include "projectile.h"
 #include "explosion.h"
 #include "waterParticle.h"
 #include "boat.h"
+#include "fuelBarFill.h"
+#include "barell.h"
+#include "ammoBar.h"
+#include "ammoCart.h"
 
 #include <shaders/diffuse_vert_glsl.h>
 #include <shaders/diffuse_frag_glsl.h>
@@ -31,17 +35,63 @@ Player::Player() {
 bool Player::update(Scene &scene, float dt) {
   // Fire delay increment
   fireDelay += dt;
+  fuelTime += dt;
+
+  if(fuelTime > 0.1){
+      fuel -= 0.2;
+      fuelTime = 0;
+  }
+  if(fuel < 0){
+      fuel = 0;
+  }
+
   glm::vec3 waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3), linearRand(-1,1)};
   double offset= position.x * 0.23;
 
-  // Hit detection
   for ( auto& obj : scene.objects ) {
     // Ignore self in scene
     if (obj.get() == this)
       continue;
 
-    // We only need to collide with asteroids, ignore other objects
+    auto fuelBarFill = dynamic_cast<FuelBarFill*>(obj.get());
     auto boat = dynamic_cast<Boat*>(obj.get());
+    auto barrel = dynamic_cast<Barell*>(obj.get());
+    auto ammoCart = dynamic_cast<AmmoCart*>(obj.get());
+    auto ammoBar = dynamic_cast<AmmoBar*>(obj.get());
+
+    if(ammoBar){
+        ammoBar->changeAmmo(ammo);
+    }
+
+    if(fuelBarFill){
+      fuelBarFill->changeFuelBarFill(fuel);
+    }
+
+    if(barrel){
+          float distanceX = distance(position.x, barrel->position.x);
+          float distanceY = distance(position.y, barrel->position.y);
+          if ((distanceY < 1 && distanceX < 1 && barrel->position.y > position.y) || (distanceY < 5 && distanceX < 1 && barrel->position.y < position.y )) {
+              barrel->destroy();
+              fuel = fuel + 20;
+              if(fuel > 100) fuel = 100;
+          }
+        }
+      if(ammoCart){
+          float distanceX = distance(position.x, ammoCart->position.x);
+          cout << "X" << endl;
+          cout << distanceX << endl;
+          float distanceY = distance(position.y, ammoCart->position.y);
+          cout << "Y" << endl;
+          cout << distanceY << endl;
+          if ((distanceY < 1 && distanceX < 1 && ammoCart->position.y > position.y) || (distanceY < 5 && distanceX < 1 && ammoCart->position.y < position.y )) {
+              ammoCart->destroy();
+              ammo = ammo + 2;
+              if(ammo > 6) ammo = 6;
+          }
+      }
+
+    // We only need to collide with asteroids, ignore other objects
+
     if (!boat) continue;
 
       float distanceX = distance(position.x, boat->position.x);
@@ -65,9 +115,9 @@ bool Player::update(Scene &scene, float dt) {
     water->speed = waterSpeed;
     scene.objects.push_back(move(water));
 
-  if(position.x > 8.5){
+    if(position.x > 8.5){
         position.x = 8.5;
-  }
+    }
     if(position.x < -8.5){
         position.x = -8.5;
     }
@@ -84,11 +134,12 @@ bool Player::update(Scene &scene, float dt) {
     waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3),linearRand(-1,1)};
   }
 
+
   // Firing projectiles
-  if(scene.keyboard[GLFW_KEY_SPACE] && fireDelay > fireRate) {
+  if(scene.keyboard[GLFW_KEY_SPACE] && fireDelay > fireRate && ammo > 0) {
     // Reset fire delay
       fireDelay = 0;
-
+    ammo -=1;
     auto projectile = make_unique<Projectile>();
     auto explosion = make_unique<Explosion>();
 
