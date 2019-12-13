@@ -34,7 +34,17 @@ void FuelBar::render(Scene &scene) {
   shader->use();
 
   // Set up light
-  shader->setUniform("LightDirection", scene.lightDirection);
+  shader->setUniform("LightDirection", glm::vec3{10,0,-10});
+  shader->setUniform("CameraPos",scene.camera->position);
+  shader->setUniform("LightColor", scene.lightColor3);
+
+  shader->setUniform("LightDirection2", glm::vec3{-10,0,-10});
+  shader->setUniform("LightColor2", scene.lightColor3);
+
+  shader->setUniform("ambientProp",{0.1f,0.1f,0.1f});
+  shader->setUniform("diffuseProp",{0.3f,0.3f,0.3f});
+  shader->setUniform("specularProp",{0.7f,0.7f,0.7f});
+  shader->setUniform("specularPower",64);
 
   // use camera
   shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

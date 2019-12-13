@@ -13,7 +13,6 @@ private:
   static std::unique_ptr<ppgso::Texture> texture;
 
   float age{0.0f};
-  glm::vec3 rotMomentum;
 public:
     glm::vec3 speed;
 

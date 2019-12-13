@@ -2,11 +2,18 @@
 #include <memory>
 #include <list>
 #include <map>
+#include <vector>
 
 #include <glm/glm.hpp>
 
 // Forward declare a scene
 class Scene;
+
+
+typedef struct {
+    glm::vec3 position;
+    float time;
+}Frame;
 
 /*!
  *  Abstract scene object interface
@@ -43,6 +50,7 @@ public:
    */
   virtual void onClick(Scene &scene) {};
 
+  std::vector<Frame> frame;
   // Object properties
   glm::vec3 position{0,0,0};
   glm::vec3 rotation{0,0,0};

@@ -3,6 +3,8 @@
 #include "projectile.h"
 #include "player.h"
 #include "explosion.h"
+#include "boatShadow.h"
+#include <memory>
 
 #include <shaders/diffuse_vert_glsl.h>
 #include <shaders/diffuse_frag_glsl.h>
@@ -16,27 +18,38 @@ using namespace ppgso;
 unique_ptr<Mesh> Boat::mesh;
 unique_ptr<Texture> Boat::texture;
 unique_ptr<Shader> Boat::shader;
+unique_ptr<BoatShadow> Boat::shadow;
 
 Boat::Boat() {
   // Set random scale speed and rotation
   scale *= 0.8f;
-  speed = {linearRand(1,3), -5, 0.0f};
+  speed = {linearRand(3,6), -5, 0.0f};
 
   // Initialize static resources if needed
   if (!shader) shader = make_unique<Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
   if (!texture) texture = make_unique<Texture>(image::loadBMP("boat_fishing.bmp"));
   if (!mesh) mesh = make_unique<Mesh>("smallBoat2R.obj");
+  if (!shadow) shadow = make_unique<BoatShadow>();
 }
 
 bool Boat::update(Scene &scene, float dt) {
   // Animate position according to time
 
+
   position += speed * dt;
 
-  if(position.x > 5.5 || position.x < -5.5){
+    if(position.x > 5 || position.x < -5){
       speed.x = speed.x *-1;
-  }
+    }
 
+    if(!shadowCreated){
+        shadow->position = position;
+        scene.objects.push_back(move(shadow));
+        shadowCreated = true;
+    }
+
+//    shadow->position = position;
+//    shadow->generate();
 
   // Collide with scenes
   for (auto &obj : scene.objects) {
@@ -46,11 +59,17 @@ bool Boat::update(Scene &scene, float dt) {
     // We only need to collide with asteroids and projectiles, ignore other objects
     auto projectile = dynamic_cast<Projectile*>(obj.get()); //dynamic_pointer_cast<Projectile>(obj);
 
+      auto shadow = dynamic_cast<BoatShadow*>(obj.get()); //dynamic_pointer_cast<Projectile>(obj);
+
+    if(shadow){
+        shadow->updatePosition(position);
+    }
+
    float distanceX = distance(position.x, obj->position.x);
    float distanceY = distance(position.y, obj->position.y);
 
 
-    if (distanceY < (obj->scale.y + scale.y) * 1.5f && distanceX < (obj->scale.x + scale.x) *1.5f && projectile)
+    if (distanceY < (obj->scale.y + scale.y) * 1.4f && distanceX < (obj->scale.x + scale.x) *1.2f && projectile )
     {
       projectile->destroy();
 
@@ -70,11 +89,10 @@ bool Boat::update(Scene &scene, float dt) {
     explode(scene, (obj->position + position + explodePosition5) / 2.0f, (obj->scale + scale) / 2.0f);
     explode(scene, (obj->position + position + explodePosition6) / 2.0f, (obj->scale + scale) / 2.0f);
     explode(scene, (obj->position + position + explodePosition7) / 2.0f, (obj->scale + scale) / 2.0f);
-
+      scene.boatDestroyed++;
 
       // Destroy self
-
-        return false;
+      return false;
     }
     if(age > 90){
         glm::vec3 explodePosition = {1,1,0};
@@ -85,17 +103,16 @@ bool Boat::update(Scene &scene, float dt) {
         glm::vec3 explodePosition6 = {1,-2,0};
         glm::vec3 explodePosition7 = {2,-2,0};
 
-        explode(scene, (obj->position + position) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition ) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition2) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition3) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition4) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition5) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition6) / 2.0f, (obj->scale + scale) / 2.0f);
-        explode(scene, (obj->position + position + explodePosition7) / 2.0f, (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition2 /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition3 /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition4 /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition5 /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition6 /2.0f), (obj->scale + scale) / 2.0f);
+        explode(scene, (position + explodePosition7 /2.0f), (obj->scale + scale) / 2.0f);
         return false;
     }
-    if(position.y < -10){
+    if(position.y < -15){
         return false;
     }
   }
@@ -119,7 +136,17 @@ void Boat::render(Scene &scene) {
   shader->use();
 
   // Set up light
-  shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightDirection", scene.lightDirection1);
+    shader->setUniform("CameraPos",scene.camera->position);
+    shader->setUniform("LightColor", scene.lightColor);
+
+    shader->setUniform("LightDirection2", scene.lightDirection2);
+    shader->setUniform("LightColor2", scene.lightColor2);
+//material for obsidian
+    shader->setUniform("ambientProp",{0.05f,0.05f,0.066f});
+    shader->setUniform("diffuseProp",{0.18275f,0.17f,0.225f});
+    shader->setUniform("specularProp",{0.33f,0.32f,0.34f});
+    shader->setUniform("specularPower",38.4);
 
   // use camera
   shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

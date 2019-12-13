@@ -46,7 +46,6 @@ find_package(GLFW3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(FT_FREETYPE_H REQUIRED)
 
 # Optional packages
 find_package(OpenMP)
@@ -164,12 +163,13 @@ install(TARGETS gl8_framebuffer DESTINATION .)
 
 # gl9_scene
 add_executable(gl9_scene
-        src/gl9_scene/gl9_scene.cpp
+        src/gl9_scene/gameScene.cpp
         src/gl9_scene/object.cpp
         src/gl9_scene/scene.cpp
         src/gl9_scene/camera.cpp
         src/gl9_scene/ammoCart.cpp
         src/gl9_scene/barell.cpp
+        src/gl9_scene/boatShadow.cpp
         src/gl9_scene/ammoBar.cpp
         src/gl9_scene/fuelBar.cpp
         src/gl9_scene/fuelBarFill.cpp
@@ -179,10 +179,14 @@ add_executable(gl9_scene
         src/gl9_scene/rain.cpp
         src/gl9_scene/explosion.cpp
         src/gl9_scene/boat.cpp
-        src/gl9_scene/space.cpp
+        src/gl9_scene/water.cpp
+        src/gl9_scene/waterSurface.cpp
+        src/gl9_scene/winScene.cpp
+        src/gl9_scene/looseScene.cpp
         src/gl9_scene/waterParticle.cpp
+        src/gl9_scene/smokeParticle.cpp
         src/gl9_scene/mountain.cpp
-        src/gl9_scene/text.cpp)
+        )
 target_link_libraries(gl9_scene ppgso shaders)
 install(TARGETS gl9_scene DESTINATION .)
 

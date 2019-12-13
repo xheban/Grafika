@@ -1,0 +1,6 @@
+"C:\Program Files\JetBrains\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" C:\Users\Owner\Desktop\GRAFIKA-PROJEKT\Grafika\ppgso
+-- Found GLFW3: C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/dependencies/lib/mingw/libglfw3.a
+-- GLM_INCLUDE_DIR = C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/dependencies/include
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/cmake-build-debug

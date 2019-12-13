@@ -5,6 +5,7 @@
 
 #include "scene.h"
 #include "object.h"
+#include "boatShadow.h"
 
 /*!
  * Simple asteroid object
@@ -18,12 +19,14 @@ private:
   static std::unique_ptr<ppgso::Mesh> mesh;
   static std::unique_ptr<ppgso::Shader> shader;
   static std::unique_ptr<ppgso::Texture> texture;
+  static std::unique_ptr<BoatShadow> shadow;
 
   // Age of the object in seconds
   float age{0.0f};
 
   // Speed and rotational momentum
   glm::vec3 speed;
+  bool shadowCreated = false;
 
   /*!
    * Split the asteroid into multiple pieces and spawn an explosion object.
@@ -41,6 +44,7 @@ public:
    * Create new asteroid
    */
   Boat();
+
 
   /*!
    * Update asteroid

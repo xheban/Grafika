@@ -4,6 +4,7 @@
 #include "projectile.h"
 #include "explosion.h"
 #include "waterParticle.h"
+#include "smokeParticle.h"
 #include "boat.h"
 #include "fuelBarFill.h"
 #include "barell.h"
@@ -24,11 +25,11 @@ unique_ptr<Shader> Player::shader;
 
 Player::Player() {
   // Scale the default model
-  scale *= 0.4f;
+  scale *= 0.28f;
 
   // Initialize static resources if needed
   if (!shader) shader = make_unique<Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
-  if (!texture) texture = make_unique<Texture>(image::loadBMP("metal.bmp"));
+  if (!texture) texture = make_unique<Texture>(image::loadBMP("war.bmp"));
   if (!mesh) mesh = make_unique<Mesh>("playerBoat.obj");
 }
 
@@ -38,15 +39,15 @@ bool Player::update(Scene &scene, float dt) {
   fuelTime += dt;
 
   if(fuelTime > 0.1){
-      fuel -= 0.2;
+      fuel -= 0.3;
       fuelTime = 0;
   }
   if(fuel < 0){
       fuel = 0;
   }
+  position.x += (windStrength * dt)/2;
 
-  glm::vec3 waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3), linearRand(-1,1)};
-  double offset= position.x * 0.23;
+  glm::vec3 smokeSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3), linearRand(-1,1)};
 
   for ( auto& obj : scene.objects ) {
     // Ignore self in scene
@@ -58,6 +59,11 @@ bool Player::update(Scene &scene, float dt) {
     auto barrel = dynamic_cast<Barell*>(obj.get());
     auto ammoCart = dynamic_cast<AmmoCart*>(obj.get());
     auto ammoBar = dynamic_cast<AmmoBar*>(obj.get());
+
+
+    if(fuel < 0.5){
+        scene.lost = true;
+    }
 
     if(ammoBar){
         ammoBar->changeAmmo(ammo);
@@ -78,12 +84,12 @@ bool Player::update(Scene &scene, float dt) {
         }
       if(ammoCart){
           float distanceX = distance(position.x, ammoCart->position.x);
-          cout << "X" << endl;
-          cout << distanceX << endl;
+//          cout << "X" << endl;
+//          cout << distanceX << endl;
           float distanceY = distance(position.y, ammoCart->position.y);
-          cout << "Y" << endl;
-          cout << distanceY << endl;
-          if ((distanceY < 1 && distanceX < 1 && ammoCart->position.y > position.y) || (distanceY < 5 && distanceX < 1 && ammoCart->position.y < position.y )) {
+//          cout << "Y" << endl;
+//          cout << distanceY << endl;
+          if ((distanceY < 1 && distanceX < 1 && ammoCart->position.y > position.y) || (distanceY < 3 && distanceX < 1 && ammoCart->position.y < position.y )) {
               ammoCart->destroy();
               ammo = ammo + 2;
               if(ammo > 6) ammo = 6;
@@ -106,44 +112,36 @@ bool Player::update(Scene &scene, float dt) {
           scene.objects.push_back(move(explosion));
           boat->destroy();
           // Die
+          scene.lost = true;
           return false;
       }
 
   }
-    auto water = make_unique<WaterParticle>();
-    water->position = position - glm::vec3(linearRand(-0.2f,0.2f)+offset, 3.7f, 0.3f);
-    water->speed = waterSpeed;
-    scene.objects.push_back(move(water));
 
-    if(position.x > 8.5){
-        position.x = 8.5;
-    }
-    if(position.x < -8.5){
-        position.x = -8.5f;
-    }
 
+   for(int i = 0; i <5; i++){
+       auto smoke = make_unique<SmokeParticle>();
+       smoke->position = position - glm::vec3(linearRand(-0.12f,.07f),1.8f, 0.1f);
+       smoke->speed = smokeSpeed;
+       scene.objects.push_back(move(smoke));
+   }
+
+    if(position.x > 6){
+        position.x = 6;
+    }
+    if(position.x < -6){
+        position.x = -6.0f;
+    }
   // Keyboard controls
     if(scene.keyboard[GLFW_KEY_LEFT]) {
         position.x += 10 * dt;
-//        rotation.z = -PI/16.0f;
-//        if(!addedL){
-//            position.x -= 0.5;
-//        }
-        waterSpeed = {linearRand(-0.8,0.8) - 4, linearRand(-4,-3),linearRand(-1,1)};
-        addedL = true;
+        smokeSpeed = {linearRand(-0.8,0.8) - 4, linearRand(-4,-3),linearRand(-1,1)};
     } else if(scene.keyboard[GLFW_KEY_RIGHT]) {
         position.x -= 10 * dt;
-//        rotation.z = PI/16.0f;
-//        if(!addedR){
-//            position.x += 0.3;
-//        }
-        waterSpeed = {linearRand(-0.8,0.8) + 4, linearRand(-4,-3),linearRand(-1,1)};
-        addedR = true;
+        smokeSpeed = {linearRand(-0.8,0.8) + 4, linearRand(-4,-3),linearRand(-1,1)};
     } else {
-        addedL = false;
-        addedR = false;
         rotation.z = 0;
-        waterSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3),linearRand(-1,1)};
+        smokeSpeed = {linearRand(-0.8,0.8), linearRand(-4,-3),linearRand(-1,1)};
     }
 
 
@@ -155,11 +153,11 @@ bool Player::update(Scene &scene, float dt) {
     auto projectile = make_unique<Projectile>();
     auto explosion = make_unique<Explosion>();
 
-    explosion->position = position - glm::vec3(offset, 0.3f,0.3f);
+    explosion->position = position - glm::vec3(0, -1.3f,0.1f);
     explosion->scale = {0.2,0.2,0.2};
     scene.objects.push_back(move(explosion));
 
-    projectile->position = position - glm::vec3(offset, 0.3f, 0.3f) ;
+    projectile->position = position - glm::vec3(0, -1.3f, 0.1f) ;
     scene.objects.push_back(move(projectile));
 
   }
@@ -172,7 +170,18 @@ void Player::render(Scene &scene) {
   shader->use();
 
   // Set up light
-  shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightDirection", scene.lightDirection1);
+    shader->setUniform("CameraPos",scene.camera->position);
+    shader->setUniform("LightColor", scene.lightColor);
+
+    shader->setUniform("LightDirection2", scene.lightDirection2);
+    shader->setUniform("LightColor2", scene.lightColor2);
+
+    // material properties for chromatic metal
+    shader->setUniform("ambientProp",{0.25f,0.25f,0.25f});
+    shader->setUniform("diffuseProp",{0.4f,0.4f,0.4f});
+    shader->setUniform("specularProp",{0.77f,0.77f,0.77f});
+    shader->setUniform("specularPower",76.8);
 
   // use camera
   shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
@@ -186,4 +195,8 @@ void Player::render(Scene &scene) {
 
 void Player::onClick(Scene &scene) {
   cout << "Player has been clicked!" << endl;
+}
+
+void Player::windForce(float windStrengthB){
+    windStrength = windStrengthB;
 }

@@ -44,13 +44,22 @@ class Scene {
     std::map< int, int > keyboard;
 
     // Lights, in this case using only simple directional diffuse lighting
-    glm::vec3 lightDirection{-1.0f, -1.0f, -1.0f};
+    glm::vec3 lightDirection1{-10.0f, 0.0f, -10.0f};
+    glm::vec3 lightDirection2{10.0f,0.0f,-10.0f};
+    glm::vec3 lightColor{1.0f,1.0f,1.0f};
+    glm::vec3 lightColor2{1.0f,1.0f,1.0f};
+    glm::vec3 lightColor3{1.0f,1.0f,1.0f};
+
+
+    int boatDestroyed = 0;
+    bool lost = false;
 
     // Store cursor state
     struct {
       double x, y;
       bool left, right;
     } cursor;
+
 };
 
 #endif // _PPGSO_SCENE_H

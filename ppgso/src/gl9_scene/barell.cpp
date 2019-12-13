@@ -50,7 +50,7 @@ bool Barell::update(Scene &scene, float dt) {
    float distanceY = distance(position.y, obj->position.y);
 
 
-    if (distanceY < (obj->scale.y + scale.y) * 1.5f && distanceX < (obj->scale.x + scale.x) *1.5f && projectile){
+    if (distanceY < (obj->scale.y + scale.y/2)  && distanceX < (obj->scale.x + scale.x/2)  && projectile){
         projectile->destroy();
 
         glm::vec3 explodePosition = {1,1,0};
@@ -101,7 +101,18 @@ void Barell::render(Scene &scene) {
   shader->use();
 
   // Set up light
-  shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightDirection", scene.lightDirection1);
+    shader->setUniform("CameraPos",scene.camera->position);
+    shader->setUniform("LightColor", scene.lightColor);
+
+    shader->setUniform("LightDirection2", scene.lightDirection2);
+    shader->setUniform("LightColor2", scene.lightColor2);
+
+    //material properties for red plastic
+    shader->setUniform("ambientProp",{0.0f,0.0f,0.0f});
+    shader->setUniform("diffuseProp",{0.5f,0.0f,0.0f});
+    shader->setUniform("specularProp",{0.7f,0.6f,0.6f});
+    shader->setUniform("specularPower",32);
 
   // use camera
   shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

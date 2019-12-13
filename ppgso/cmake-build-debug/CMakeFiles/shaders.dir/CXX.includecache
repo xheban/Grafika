@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/cmake-build-debug/shaders/diffuse_frag_glsl.cpp
+diffuse_frag_glsl.h
+C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/cmake-build-debug/shaders/diffuse_frag_glsl.h
+
+C:/Users/Owner/Desktop/GRAFIKA-PROJEKT/Grafika/ppgso/cmake-build-debug/shaders/diffuse_frag_glsl.h
+string
+-
+
